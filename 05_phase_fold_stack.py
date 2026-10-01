@@ -107,6 +107,11 @@ def main():
     axes[1].set_title("Coherent Stack & Binned Profile (Noise Averaged Out)")
     axes[1].legend(loc="lower right")
 
+    out_file = "05_phase_folded_transit.png"
+    print(f"\n[+] Saving plot to {out_file}...")
+    plt.savefig(out_file, dpi=300, bbox_inches="tight")
+    print(f"[+] Saved {out_file} successfully!")
+
     plt.show()
 
 if __name__ == "__main__":

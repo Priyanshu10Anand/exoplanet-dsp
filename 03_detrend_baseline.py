@@ -89,6 +89,11 @@ def main():
     axes[2].set_title("3. Micro-View: Periodic Transit Dips Visible to the Eye")
     axes[2].legend(loc="lower right")
 
+    out_file = "03_savgol_detrending.png"
+    print(f"\n[+] Saving plot to {out_file}...")
+    plt.savefig(out_file, dpi=300, bbox_inches="tight")
+    print(f"[+] Saved {out_file} successfully!")
+
     plt.show()
 
 if __name__ == "__main__":

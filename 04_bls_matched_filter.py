@@ -85,6 +85,11 @@ def main():
     ax.grid(True, linestyle="--", alpha=0.5)
     ax.legend(loc="upper right")
 
+    out_file = "04_bls_periodogram.png"
+    print(f"\n[+] Saving plot to {out_file}...")
+    plt.savefig(out_file, dpi=300, bbox_inches="tight")
+    print(f"[+] Saved {out_file} successfully!")
+
     plt.show()
 
 if __name__ == "__main__":
