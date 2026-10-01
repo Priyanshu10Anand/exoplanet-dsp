@@ -1,0 +1,13 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+.venv/
+
+# Astro data caches & FITS files
+.lightkurve-cache/
+.astropy/
+*.fits
+*.fits.gz
+
+# VS Code settings
+.vscode/
