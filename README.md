@@ -4,7 +4,7 @@
 
 This project implements an end-to-end digital signal processing (DSP) pipeline to detect and physically characterize exoplanets from noisy spacecraft telemetry. By treating astronomical photometry as a classic signal-to-noise extraction problem, the pipeline identifies periodic transit dips buried in 1/f colored noise.
 
-Using NASA's Kepler Space Telescope data for the target system **Kepler-10**, the pipeline successfully performs pre-whitening, matched filtering, and coherent stacking to extract the 0.016% signal drop caused by the rocky exoplanet **Kepler-10b**. Finally, the pipeline derives the planet's physical metrics using Kepler's laws of planetary motion.
+Using NASA's Kepler Space Telescope data for the target system **Kepler-10**, the pipeline successfully performs pre-whitening, matched filtering and coherent stacking to extract the 0.016% signal drop caused by the rocky exoplanet **Kepler-10b**. Finally, the pipeline derives the planet's physical metrics using Kepler's laws of planetary motion.
 
 ## 2. Technical Stack
 
@@ -32,13 +32,13 @@ Spacecraft data is contaminated by cosmic ray hits, thruster firings, and data l
 
 - **NaN & Quality Filtering:** We drop missing cadences and filter by `quality == 0` to discard known hardware anomalies (e.g., reaction wheel desaturations).
 - **Asymmetric Sigma-Clipping:** Standard standard deviation (σ) is heavily skewed by outliers. We instead compute the **Median Absolute Deviation (MAD)** to find the robust statistical spread.
-  - _The EE Concept:_ Cosmic rays cause artificial _positive_ charge spikes, while exoplanets cause physical _negative_ dips. We apply an asymmetric threshold (+4σ upper, -8σ lower). This rigorously scrubs cosmic rays without accidentally amputating the true exoplanet signal.
+  - _The underlying concept:_ Cosmic rays cause artificial _positive_ charge spikes, while exoplanets cause physical _negative_ dips. We apply an asymmetric threshold (+4σ upper, -8σ lower). This rigorously scrubs cosmic rays without accidentally amputating the true exoplanet signal.
 
 ### Step 3: Baseline Detrending (Pre-Whitening)
 
-Stars are not static; they pulsate, have magnetic starspot cycles, and the spacecraft undergoes slow thermal expansion. This manifests as high-amplitude 1/f (colored) baseline drift.
+Stars are not static; they pulsate, have magnetic starspot cycles and the spacecraft undergoes slow thermal expansion. This manifests as high-amplitude 1/f (colored) baseline drift.
 
-- **The Filter:** We apply a **Savitzky-Golay polynomial filter** (window size ~3 days).
+- **The Filter:** We apply a **Savitzky-Golay polynomial filter** (window size ~3 days). It is a digital smoothing and differentiation filter that removes high-frequency noise from data while preserving important signal features like peak heights and widths.
 - **The DSP Concept:** This acts as a specialized low-pass filter. The window is deliberately chosen to be much wider than the planetary transit duration (~1.6 hours). Therefore, the polynomial perfectly tracks the slow stellar drift but glides right over the rapid transit dips. Dividing the raw flux by this low-pass trend yields a flattened, pre-whitened residual signal centered strictly at 1.0.
 
 ### Step 4: Matched Filtering via Box Least Squares (BLS)
@@ -46,7 +46,7 @@ Stars are not static; they pulsate, have magnetic starspot cycles, and the space
 Standard Fourier Transforms (FFT) fail here because a transit has a very small duty cycle (~1%). Spreading that square pulse over hundreds of sinusoidal harmonics destroys the Signal-to-Noise Ratio (SNR).
 
 - **The BLS Algorithm:** We use the Box Least Squares periodogram, which acts as a **Matched Filter**.
-- **Execution:** We define a mathematical "boxcar" template (a U-shaped dip). The algorithm sweeps across a massive grid of trial orbital periods (P), transit durations (τ), and reference epochs (t0). It calculates the cross-correlation power for each combination. The highest peak in the BLS spectrum reveals the true orbital period of the planet.
+- **Execution:** We define a mathematical "boxcar" template (a U-shaped dip). The algorithm sweeps across a massive grid of trial orbital periods (P), transit durations (τ) and reference epochs (t0). It calculates the cross-correlation power for each combination. The highest peak in the BLS spectrum reveals the true orbital period of the planet.
 
 ### Step 5: Coherent Phase Folding & Stacking
 
@@ -83,10 +83,10 @@ _Result:_ The planet orbits at **0.0169 AU** (~2.5 million km). This is more tha
 
 Assuming a circular orbit, we calculate the planet's velocity:
 `v = (2 * π * a) / P`
-_Result:_ The planet travels at a blistering **218.9 km/s** (roughly 490,000 mph).
+_Result:_ The planet travels at a blistering **218.9 km/s**.
 
 ---
 
 ## 5. Conclusion & Project Value
 
-This project demonstrates the powerful intersection of digital signal processing and modern astrophysics. By systematically addressing non-Gaussian outliers, 1/f baseline drift, and low-SNR pulse detection, the pipeline successfully uncovers a rocky world hundreds of light-years away using nothing but open-source Python toolkits and fundamental math.
+This project demonstrates the powerful intersection of digital signal processing and modern astrophysics. By systematically addressing non-Gaussian outliers, 1/f baseline drift and low-SNR pulse detection, the pipeline successfully uncovers a rocky world hundreds of light-years away using nothing but open-source Python toolkits and fundamental math.
