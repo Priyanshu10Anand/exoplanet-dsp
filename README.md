@@ -75,7 +75,7 @@ The pipeline queries the **Mikulski Archive for Space Telescopes (MAST)** to dow
 - **Observation baseline:** Approximately 90 days
 - **Signal:** PDCSAP Flux
 
-**PDCSAP Flux (Pre-search Data Conditioning Simple Aperture Photometry)** is used as the input photometric signal. It is already partially corrected for instrumental systematics such as spacecraft pointing jitter and thermal focus drift using cotrending basis vectors (set of time-series vectors used in astronomy to identify and remove common instrumental noise and systematic errors from photometric light curves).
+**PDCSAP Flux (Pre-search Data Conditioning Simple Aperture Photometry)** is used as the input photometric signal. It is already partially corrected for instrumental systematics such as spacecraft pointing jitter and thermal focus drift using cotrending basis vectors.
 
 ---
 
@@ -87,7 +87,7 @@ Spacecraft photometric data can contain several types of artifacts, including:
 - Thruster firings
 - Data dropouts
 - Instrumental anomalies
-- Reaction-wheel desaturation events (corrective maneuver where a spacecraft slows down its internal reaction wheels to release accumulated angular momentum before the wheels reach their maximum speed limits)
+- Reaction-wheel desaturation events
 
 ### 5.1 NaN & Quality Filtering
 

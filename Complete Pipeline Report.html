@@ -271,20 +271,17 @@
   <body>
     <main>
       <h1>Detecting Kepler-10b from Raw Photometry</h1>
-      <p class="sub">
-        A complete, file-by-file report on the six-stage pipeline: from photons
-        to planetary dimensions
-      </p>
+      <p class="sub">A complete report on the six-stage pipeline</p>
 
       <h2>1. Purpose and Big Picture</h2>
       <p>
-        <b>Problem.</b> Kepler-10b blocks only about 160 parts per million (ppm,
-        ≈0.016%) of its star's light when it transits. That dip is far smaller
+        <b>Problem:</b> Kepler-10b blocks only about 160 parts per million (ppm,
+        ≈ 0.016%) of its star's light when it transits. That dip is far smaller
         than the noise in any single measurement. The task is to extract this
-        tiny, repeating signal and convert it into physical quantities: planet
-        size, orbital distance and speed.
+        tiny, repeating signal and convert it into physical quantities like
+        planet size, orbital distance and speed.
       </p>
-      <p><b>Solution.</b> Six scripts in three phases:</p>
+      <p><b>Solution:</b> Six scripts in three phases:</p>
       <div class="tw">
         <table>
           <tr>
@@ -296,7 +293,7 @@
             <td>A. Signal conditioning</td>
             <td>1, 2, 3</td>
             <td>
-              Acquire data; remove spacecraft artifacts, bad points, cosmic rays
+              Acquire data, remove spacecraft artifacts, bad points, cosmic rays
               and slow stellar variability
             </td>
           </tr>
@@ -319,8 +316,8 @@
         </table>
       </div>
       <pre class="flow">
-Raw flux → [1] PDCSAP flux → [2] clean flux → [3] flat baseline at 1.0
-→ [4] period P → [5] folded, binned transit (δ, τ) → [6] Rp/R*, a, v</pre
+Raw flux → [1] PDCSAP flux → [2] clean flux → [3] flat baseline at 1.0 → [4] period P → 
+[5] folded, binned transit (δ, τ) → [6] Rp/R*, a, v</pre
       >
       <p>
         Each stage depends on the previous one. For example, step 4 only works
@@ -333,49 +330,44 @@ Raw flux → [1] PDCSAP flux → [2] clean flux → [3] flat baseline at 1.0
       <p>
         Queries NASA's Mikulski Archive for Space Telescopes (MAST) via the
         <code>lightkurve</code> API and downloads Kepler-10's
-        brightness-versus-time record (its "light curve").
+        brightness-versus-time record ("light curve").
       </p>
-      <pre><code>search_q3 = lk.search_lightcurve("Kepler-10", mission="Kepler", quarter=3, exptime=1800)
+      <pre><code>search_q3 = lk.search_lightcurve("Kepler-10", mission = "Kepler", quarter = 3, exptime = 1800) 
 lc = search_q3.download()</code></pre>
       <ul>
-        <li><code>mission="Kepler"</code>: use the Kepler space telescope.</li>
         <li>
-          <code>quarter=3</code>: Kepler's observing was split into ~90-day
+          <code>mission = "Kepler"</code>: use the Kepler space telescope.
+        </li>
+        <li>
+          <code>quarter = 3</code>: Kepler's observing was split into ~90-day
           quarters; Quarter 3 is one continuous block.
         </li>
         <li>
-          <code>exptime=1800</code>: <b>Long Cadence</b>, one exposure every
-          1,800 s (30 min), giving about 4,300 points over 90 days.
+          <code>exptime = 1800</code>: <b>Long Cadence</b>, one exposure every
+          1800s (30 min), giving about 4300 points over 90 days.
         </li>
       </ul>
-      <p>
-        <b>Why PDCSAP flux.</b> Pre-search Data Conditioning Simple Aperture
-        Photometry is NASA's corrected flux. Spacecraft suffer pointing jitter
-        and thermal expansion as sunlight heats the chassis, making the star
-        drift across the CCD pixels and creating false brightness changes. NASA
-        applies Principal Component Analysis (PCA) using
-        <b>Cotrending Basis Vectors (CBVs)</b>, the movement patterns common to
-        all stars on the camera. Being common to every star, they must be
-        instrumental, so they are subtracted from this star's signal.
+      <b>
+        We are using PDCSAP flux (Pre-search Data Conditioning Simple Aperture Photometry)</b> because it is NASA's corrected flux. Spacecraft suffer pointing jitter and thermal expansion as sunlight heats the chassis, making the star drift across the CCD (Charged Coupled Device) pixels and creating false brightness changes. NASA applies Principal Component Analysis (PCA) using <b>Cotrending Basis Vectors (CBVs)</b>, the movement patterns common to all stars on the camera. Being common to every star, they must be instrumental, so they are subtracted from this star's signal.
       </p>
       <h3>File 1, in more depth</h3>
       <ul>
         <li>
-          <b>What lightkurve returns.</b> <code>download()</code> gives a
+          <b>What lightkurve returns:</b> <code>download()</code> gives a
           light-curve object with four key columns: <code>time</code>,
           <code>flux</code>, <code>flux_err</code> (per-point uncertainty) and
           <code>quality</code> (the 32-bit flag integer used in File 2). Kepler
-          time is stored as BKJD, i.e. Barycentric Julian Date minus 2,454,833,
+          time is stored as BKJD (Barycentric Julian Date) minus 2,454,833,
           so values near 170–260 correspond to Quarter 3 (late 2009).
         </li>
         <li>
-          <b>Long vs short cadence.</b> Kepler also offers Short Cadence (60 s).
+          <b>Long vs short cadence:</b> Kepler also offers Short Cadence (60s).
           Long Cadence (30 min) is chosen because it exists for essentially the
-          entire mission and has plenty of resolution for a 1.6 h transit (about
+          entire mission and has plenty of resolution for a 1.6h transit (about
           3 points per transit).
         </li>
         <li>
-          <b>SAP vs PDCSAP.</b> SAP is the summed pixel brightness inside a
+          <b>SAP vs PDCSAP:</b> SAP is the summed pixel brightness inside a
           fixed aperture and still contains drift, focus changes and aperture
           losses. PDCSAP removes these and also corrects for light from
           neighbouring stars (crowding) and the fraction of the star's light
@@ -384,7 +376,7 @@ lc = search_q3.download()</code></pre>
           step.
         </li>
         <li>
-          <b>Default masking.</b> lightkurve already applies a default quality
+          <b>Default masking:</b> lightkurve already applies a default quality
           bitmask on download, which drops the worst cadences. File 2 enforces
           the stricter <code>quality == 0</code> rule.
         </li>
@@ -413,15 +405,15 @@ sigma_mad = 1.4826 * mad</code></pre>
       </div>
       <p>
         The ordinary standard deviation squares each deviation, so one huge
-        spike inflates σ, loosens the filter, and lets the outliers survive. The
+        spike inflates σ, loosens the filter and lets the outliers survive. The
         <b>Median Absolute Deviation (MAD)</b> is the median of absolute
         deviations from the median and barely reacts to extreme values.
         Multiplying by <b>1.4826</b> (≈ 1/0.6745) rescales MAD to equal σ for
         Gaussian data, giving an outlier-immune "one sigma".
       </p>
       <div class="note">
-        <b>Worked example.</b> Take seven flux values: 10, 11, 9, 10, 12, 10,
-        500 (the last is a cosmic ray). <br />
+        <b>Worked example:</b> Take seven flux values: 10, 11, 9, 10, 12, 10,
+        500 (last is a cosmic ray). <br />
         • Standard deviation: mean = 80.3, population σ ≈ <b>171</b>. A +4σ cut
         sits at about 10 + 4×171 = 694, so the 500 spike <b>survives</b>.<br />
         • MAD: median = 10; absolute deviations are 0, 1, 1, 0, 1, 2, 490; their
@@ -432,7 +424,7 @@ sigma_mad = 1.4826 * mad</code></pre>
         at all.
       </div>
       <p>
-        <b>Why the median as the centre.</b> The median is also
+        <b>Why the median as the centre:</b> The median is also
         outlier-resistant (a spike cannot drag it), so the clip window stays
         centred on the true typical flux.
       </p>
@@ -471,19 +463,19 @@ sigma_mad = 1.4826 * mad</code></pre>
         timescales). It dwarfs the planet signal and must be flattened to
         exactly 1.0 so the matched filter in step 4 works.
       </p>
-      <pre><code>flat_lc = clean_lc.flatten(window_length=151, polyorder=2)</code></pre>
+      <pre><code>flat_lc = clean_lc.flatten(window_length = 151, polyorder = 2)</code></pre>
       <p>
         <b>How the Savitzky-Golay filter works:</b> a 151-point window slides
-        along the series; inside it a 2nd-degree polynomial (y = ax² + bx + c)
-        is fitted by linear least squares, and its value at the window centre is
+        along the series and inside it a 2nd-degree polynomial (y = ax² + bx + c)
+        is fitted by linear least squares and its value at the window centre is
         the trend estimate.
       </p>
       <p>
         <b>Window size logic:</b> 151 cadences × 30 min ≈ 75.5 h ≈
         <b>3.1 days</b>, while the transit lasts only ≈ <b>1.6 hours</b>. The
-        polynomial acts like a stiff board over a small pothole: it follows the
+        polynomial acts like a stiff board over a small pothole. It follows the
         slow 3-day stellar wave but ignores the 1-hour dip. Too short a window
-        would follow (and erase) the transit; too long would miss real stellar
+        would follow (and erase) the transit, too long would miss real stellar
         variation.
       </p>
       <p><b>Pre-whitening by division:</b></p>
@@ -514,8 +506,8 @@ sigma_mad = 1.4826 * mad</code></pre>
             <td>151</td>
             <td>3.1 d</td>
             <td>
-              ≈45× longer than the transit; follows stellar wobble, ignores the
-              dip. <b>Chosen</b>
+              ≈ 45x longer than the transit; follows stellar wobble, ignores the
+              dip. <b>(Chosen)</b>
             </td>
           </tr>
           <tr>
@@ -551,10 +543,10 @@ periodogram = bls.power(periods, durations)
 best_period = periodogram.period[np.argmax(periodogram.power)]</code></pre>
       <p>
         <b>Why not an FFT?</b> An FFT decomposes signals into sine waves, but a
-        transit train is a periodic square pulse with a duty cycle of only ≈8%
-        (1.6 h of a 20.1 h orbit). Representing such a narrow, sharp-edged pulse
+        transit train is a periodic square pulse with a duty cycle of only ≈ 8%
+        (1.6h of a 20.1h orbit). Representing such a narrow, sharp-edged pulse
         takes dozens to hundreds of harmonics, each holding a sliver of the
-        power against its own noise, which wrecks the signal-to-noise ratio
+        power against its own noise which wrecks the signal-to-noise ratio
         (SNR).
       </p>
       <p><b>How BLS works (matched filtering):</b></p>
@@ -582,7 +574,7 @@ best_period = periodogram.period[np.argmax(periodogram.power)]</code></pre>
       <h3>BLS internals and sanity checks</h3>
       <ul>
         <li>
-          <b>Per-trial statistic.</b> For each trial (P, τ, phase), the
+          <b>Per-trial statistic:</b> For each trial (P, τ, phase), the
           algorithm splits points into in-box and out-of-box groups. The fitted
           depth is δ = mean(out) − mean(in), and the detection strength grows
           with depth and with the number of in-box points: SNR ≈
@@ -590,21 +582,21 @@ best_period = periodogram.period[np.argmax(periodogram.power)]</code></pre>
           fit-quality score.
         </li>
         <li>
-          <b>Period grid.</b> Trial periods cannot be spaced arbitrarily. If P
+          <b>Period grid:</b> Trial periods cannot be spaced arbitrarily. If P
           is off by ΔP, the box drifts by ΔP per orbit and by ≈ΔP·(T/P) over the
           whole baseline T. To keep drift under one duration, ΔP ≲ P·τ/T ≈
           0.837×0.067/90 ≈ <b>6×10⁻⁴ d</b>. That is why thousands of trial
           periods are scanned.
         </li>
         <li>
-          <b>Aliases.</b> At P/2 the boxes fall on every transit but also on
+          <b>Aliases:</b> At P/2 the boxes fall on every transit but also on
           empty half-orbits, diluting the score. At 2P only half the transits
           are covered. Both score lower than the true P, so the true period
           usually wins at high SNR.
         </li>
         <li>
-          <b>Illustrative SNR.</b> If the point-to-point scatter were 100 ppm
-          and ≈320 in-transit points existed, SNR ≈ (160/100)·√320 ≈ <b>29</b>,
+          <b>Illustrative SNR:</b> If the point-to-point scatter were 100 ppm
+          and ≈ 320 in-transit points existed, SNR ≈ (160/100)·√320 ≈ <b>29</b>,
           a very strong detection.
         </li>
       </ul>
@@ -614,7 +606,7 @@ best_period = periodogram.period[np.argmax(periodogram.power)]</code></pre>
         Amplification)
       </h3>
       <p>
-        One transit is ≈160 ppm deep, nearly invisible in the noise. Using the
+        One transit is ≈ 160 ppm deep, nearly invisible in the noise. Using the
         found period we stack all transits: 90 d ÷ 0.837 d ≈
         <b>107 transits</b>.
       </p>
@@ -644,17 +636,17 @@ binned_lc = folded_lc.bin(time_bin_size=10_minutes)</code></pre>
         The signal is identical every orbit, so it does not average away: noise
         shrinks while the signal keeps full depth. This is called
         <b>coherent</b> because the repeating signal adds as N, while noise adds
-        only as √N. (My estimate, not from the source: with roughly 30–40 points
-        per bin, noise drops about 5–6×.) The clean, U-shaped transit then
+        only as √N. My estimate (not from the source): with roughly 30–40 points
+        per bin, noise drops about 5–6x. The clean, U-shaped transit then
         emerges, yielding depth δ ≈ 160 ppm and duration τ ≈ 1.6 h.
       </p>
       <div class="note">
-        <b>Worked noise arithmetic (illustrative).</b> Transit lasts 1.6 h = 96
+        <b>Worked noise arithmetic (illustrative):</b> Transit lasts 1.6 h = 96
         min, so about 3 long-cadence points fall in each transit. Over ~107
         orbits that gives ≈320 in-transit points. Spread across ~10 ten-minute
         bins, that is N ≈ 32 points per bin. With an assumed per-point scatter
         of 100 ppm: σ<sub>binned</sub> = 100/√32 ≈ <b>17.7 ppm</b>. A 160 ppm
-        dip is then ≈ <b>9× the noise in each bin</b>, versus only 1.6× in a
+        dip is then ≈ <b>9x the noise in each bin</b>, versus only 1.6x in a
         single raw point.<br />
         Long-cadence points from different orbits fall at different phases
         (because P is not an exact multiple of 30 min), which is what lets
@@ -782,7 +774,7 @@ a_semi_major = a_cubed**(1/3)</code></pre>
         − b²)). This shows how the duration constrains geometry, as noted above.
       </p>
 
-      <h2>Frequently Confused Points</h2>
+      <h2>Things that confused me</h2>
       <dl>
         <dt>Why is the period found before the depth is "known"?</dt>
         <dd>
