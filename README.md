@@ -242,7 +242,7 @@ These observables can then be converted into physical properties of the planetar
 
 For a simplified transit model, the fractional loss of stellar flux is approximately equal to the ratio of the projected areas of the planet and star:
 
-$$\delta = \frac{A_p}{A_*} = \frac{\pi R_p^2}{\pi R_*^2}$$
+$$\delta = \frac{A_p}{A_\ast} = \frac{\pi R_p^2}{\pi R_\ast^2}$$
 
 Therefore:
 
