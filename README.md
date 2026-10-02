@@ -426,3 +426,116 @@ $$\phi_i = \left[ \frac{t_i - t_0}{P} + 0.5 \right] \bmod 1 - 0.5$$
 $$\text{SNR}_{\text{folded}} \approx \text{SNR}_{\text{single}} \sqrt{N}$$
 
 ---
+
+## 14. Glossary
+
+## Signal Processing & Telemetry
+
+### Digital Signal Processing (DSP)
+
+The conversion of raw analog signals from celestial objects into numerical data streams that computers can clean, filter and analyze.
+
+### Telemetry
+
+The automated collection of measurements and data from remote spacecraft and its wireless transmission back to Earth for monitoring and analysis.
+
+### White Noise
+
+A random signal that has equal intensity across all frequencies, resulting in a flat and constant power spectral density.
+
+### $1/f$ Colored Noise (Pink Noise)
+
+A random, time-correlated signal fluctuation where the power spectral density $S(f)$ is inversely proportional to the frequency ($f$) of the signal:
+$$S(f) \propto \frac{1}{f}$$
+It is referred to as "colored" because it exhibits greater power at lower frequencies.
+
+### Pre-whitening
+
+An iterative data-processing technique used to extract individual periodic oscillation frequencies (such as stellar pulsation modes) from noisy time-series data.
+
+### Matched Filtering
+
+A signal processing technique used to detect faint, known signal patterns hidden inside loud observational noise by correlating the noisy data with a theoretical template of the signal.
+
+### Coherent Stacking
+
+A data processing technique where multiple individual signals or observations are aligned by both their amplitude and phase before being added together constructively.
+
+---
+
+## Photometry & Astronomical Observations
+
+### Photometry
+
+The technique of measuring the flux or intensity of light radiated by celestial objects.
+
+### Cadence
+
+The time interval defining how frequently an instrument observes a specific target.
+
+### Simple Aperture Photometry (SAP)
+
+The measurement of a target star's brightness calculated by summing the raw light values of all the pixels within a designated aperture on a digital sensor.
+
+### Pre-search Data Conditioning Simple Aperture Photometry (PDCSAP)
+
+A corrected version of SAP data that has been algorithmically cleaned to remove instrumental noise, spacecraft artifacts, and long-term systematic errors while preserving short-term astrophysical variations like exoplanet transits.
+
+### Epoch
+
+A specific moment in time used as a reference point to measure and calculate the changing positions, coordinates or orbital paths of celestial objects.
+
+### Starspots (Star sports)
+
+Dark or bright temporary patches on the surface of a star caused by magnetic field concentrations.
+
+### Transit Depth
+
+The fractional decrease in a star's brightness observed when an exoplanet passes directly in front of it.
+
+---
+
+## Instrumentation & Systematics
+
+### Pointing Jitter
+
+Rapid, uncommanded micro-vibrations of a telescope's line-of-sight over short time intervals (typically in s or ms).
+
+### Thermal Focus Drift
+
+The gradual loss of sharp focus in a telescope's optics caused by changing thermal conditions during an observation session.
+
+### Cotrending Basis Vectors (CBVs)
+
+A set of mathematical reference profiles used in astronomy to model and remove systematic instrumental noise from space telescope light curves.
+
+### Reaction-Wheel Desaturation Event
+
+_(Also known as momentum dumping or momentum unloading)_  
+A scheduled operational procedure where a spacecraft fires thrusters to slow down its rapidly spinning reaction wheels, shedding accumulated angular momentum.
+
+---
+
+## Time-Series Analysis & Filtering
+
+### Savitzky-Golay Polynomial Filter
+
+A digital data-smoothing method used to reduce high-frequency noise in spectra, light curves and time-series measurements without distorting critical signal features like peak heights and line widths.
+
+### Periodogram
+
+A graph and statistical tool used to identify hidden repeating cycles or periodicities within time-series data.
+
+### Phase Folding
+
+A data analysis technique that stacks multiple repeating cycles of a periodic signal on top of each other by plotting brightness against orbital phase rather than absolute time.
+
+---
+
+## Scientific Python Libraries
+
+- **`lightkurve`**: An open-source Python package designed to analyze astronomical flux time-series data. It provides a user-friendly API to download, inspect and analyze data collected by NASA’s Kepler, K2 and TESS exoplanet missions.
+- **`astropy`**: An open-source Python library used for core astronomical data analysis, coordinate transformations, physical calculations and research.
+- **`numpy`**: An open-source foundational library for multi-dimensional array operations, mathematical calculations and numeric data analysis in Python.
+- **`scipy`**: An open-source Python library built on NumPy used for advanced scientific calculations, technical computing, optimization and signal processing algorithms.
+- **`matplotlib`**: An open-source Python visualization library used for creating static, animated and interactive publication-quality data plots.
