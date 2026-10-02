@@ -57,6 +57,18 @@ def main():
     ax.set_ylabel("Flux (e⁻ / s)")
     ax.set_xlabel("Time (BJD - 2454833)")
     plt.tight_layout()
+
+    # Common directory resolution across any script in root
+    current_file = Path(__file__).resolve()
+    project_root = current_file.parent.parent if current_file.parent.name == "src" else current_file.parent
+    figures_dir = project_root / "figures"
+    figures_dir.mkdir(parents = True, exist_ok = True)
+
+    out_file = figures_dir / "01_acquire_data.png"
+    print(f"\n[+] Saving plot to {out_file}...")
+    plt.savefig(out_file, dpi = 300, bbox_inches = "tight")
+    print(f"[+] Saved {out_file} successfully!")
+
     plt.show()
 
 if __name__ == "__main__":

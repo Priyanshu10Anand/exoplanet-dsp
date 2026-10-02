@@ -139,7 +139,13 @@ def main():
     axes[2].legend(loc = "lower right")
 
     # 5. Export high-resolution graphic before rendering interactive canvas
-    out_file = "03_savgol_detrending.png"
+    # Common directory resolution across any script in root
+    current_file = Path(__file__).resolve()
+    project_root = current_file.parent.parent if current_file.parent.name == "src" else current_file.parent
+    figures_dir = project_root / "figures"
+    figures_dir.mkdir(parents = True, exist_ok = True)
+
+    out_file = figures_dir / "03_savgol_detrending.png"
     print(f"\n[+] Saving plot to {out_file}...")
     plt.savefig(out_file, dpi = 300, bbox_inches = "tight")
     print(f"[+] Saved {out_file} successfully!")

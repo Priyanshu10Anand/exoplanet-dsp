@@ -220,6 +220,11 @@ def main():
     ax4.set_title(f"D. Coherent Detection: Kepler-10b (Rp = {r_planet.value:.2f} R_Earth, a = {a_semi_major.value:.4f} AU)")
     ax4.legend(loc = "lower right")
 
+    out_file = "06_physical_metrics.png"
+    print(f"\n[+] Saving plot to {out_file}...")
+    plt.savefig(out_file, dpi = 300, bbox_inches = "tight")
+    print(f"[+] Saved {out_file} successfully!")
+
     plt.show()
 
 if __name__ == "__main__":
