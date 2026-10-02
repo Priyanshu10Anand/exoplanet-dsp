@@ -6,12 +6,19 @@ Step 6: Physical Metric Calculation & Final Validation Dashboard
 - Generates a 4-panel DSP validation report
 """
 
+import warnings
+warnings.filterwarnings(
+    "ignore", 
+    category = UserWarning, 
+    module = "lightkurve"
+)
 import astropy.constants as const
 import astropy.units as u
 from astropy.timeseries import BoxLeastSquares
 import lightkurve as lk
 import matplotlib.pyplot as plt
 import numpy as np
+from pathlib import Path
 
 # Stellar priors for Kepler-10 host star (Batalha et al., NASA Kepler Team)
 R_STAR = 1.065 * u.R_sun       # Stellar radius

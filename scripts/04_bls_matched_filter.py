@@ -5,11 +5,18 @@ Step 4: Matched Filtering via Box Least Squares (BLS)
 - Detects the orbital period and mid-transit epoch (t0)
 """
 
+import warnings
+warnings.filterwarnings(
+    "ignore", 
+    category = UserWarning, 
+    module = "lightkurve"
+)
 import astropy.units as u
 from astropy.timeseries import BoxLeastSquares
 import lightkurve as lk
 import matplotlib.pyplot as plt
 import numpy as np
+from pathlib import Path
 
 def clean_and_detrend(lc):
     """Steps 2 & 3: Clean telemetry, normalize, and detrend via SavGol."""

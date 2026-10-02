@@ -4,10 +4,17 @@ Target: Kepler-10 (Quarter 3)
 Mission: NASA Kepler Space Telescope
 """
 
+import warnings
+warnings.filterwarnings(
+    "ignore", 
+    category = UserWarning, 
+    module = "lightkurve"
+)
 import astropy.units as u
 import lightkurve as lk
 import matplotlib.pyplot as plt
 import numpy as np
+from pathlib import Path
 
 def main():
     # 1. Query MAST archive for 30-min long-cadence observations

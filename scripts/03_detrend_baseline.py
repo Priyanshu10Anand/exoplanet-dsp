@@ -5,9 +5,16 @@ Step 3: Baseline Detrending (Pre-Whitening)
 - Pre-whitens time series to unity baseline for matched filtering
 """
 
+import warnings
+warnings.filterwarnings(
+    "ignore", 
+    category = UserWarning, 
+    module = "lightkurve"
+)
 import lightkurve as lk
 import matplotlib.pyplot as plt
 import numpy as np
+from pathlib import Path
 
 def clean_and_normalize(lc):
     """Step 2 pre-filter: reject NaNs, quality flags, and asymmetric outliers."""

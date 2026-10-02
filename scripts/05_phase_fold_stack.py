@@ -6,10 +6,17 @@ Step 5: Coherent Phase Folding & Stacking
 - Overlays best-fit boxcar matched-filter model
 """
 
+import warnings
+warnings.filterwarnings(
+    "ignore", 
+    category = UserWarning, 
+    module = "lightkurve"
+)
 from astropy.timeseries import BoxLeastSquares
 import lightkurve as lk
 import matplotlib.pyplot as plt
 import numpy as np
+from pathlib import Path
 
 def clean_and_detrend(lc):
     """Steps 2 & 3: Telemetry cleaning, asymmetric MAD clipping, and SavGol detrending """
@@ -26,7 +33,11 @@ def clean_and_detrend(lc):
     clean = clean[mask].normalize()
 
     # 3. Pre-whiten baseline to 1.0 using Savitzky-Golay polynomial filter
-    return clean.flatten(window_length=151, polyorder=2)
+    return clean.flatten(
+        window_length = 151, 
+        polyorder = 2
+    )
+
 
 def main():
     # 1. Ingest Quarter 3 telemetry and condition signal

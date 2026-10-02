@@ -6,9 +6,16 @@ Step 2: Data Cleaning & Quality Masking
 - Rescales continuum to unity
 """
 
+import warnings
+warnings.filterwarnings(
+    "ignore", 
+    category = UserWarning, 
+    module = "lightkurve"
+)
 import lightkurve as lk
 import matplotlib.pyplot as plt
 import numpy as np
+from pathlib import Path
 
 def clean_lightcurve(lc):
     """Clean telemetry, reject non-Gaussian outliers, and normalize baseline."""
