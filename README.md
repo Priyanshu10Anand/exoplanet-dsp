@@ -14,8 +14,8 @@ Using NASA's **Kepler Space Telescope** data for the target system **Kepler-10**
 | :---------------------- | :------------------------------------------------------------------------------ |
 | **Language**            | Python 3.9+                                                                     |
 | **Astronomy Libraries** | `lightkurve` (NASA MAST API interface), `astropy` (time and physical constants) |
-| **DSP & Mathematics**   | `numpy`, `scipy` (Savitzky-Golay filtering, robust statistics)                  |
-| **Visualization**       | `matplotlib` (publication-quality dashboards)                                   |
+| **DSP & Mathematics**   | `numpy`, `scipy` (Savitzky-Golay filtering, statistics)                         |
+| **Visualization**       | `matplotlib` (dashboards)                                                       |
 
 ---
 

@@ -1,10 +1,9 @@
 """
 Step 2: Data Cleaning & Quality Masking
-- NaN drop
-- Bitmask telemetry filtering
-- Robust Median Absolute Deviation (MAD) calculation
-- Asymmetric sigma-clipping (protects negative transit dips)
-- Baseline normalization
+- Drops missing values and hardware-flagged cadences
+- Estimates robust noise spread via MAD
+- Rejects cosmic-ray spikes while preserving physical transit dips
+- Rescales continuum to unity
 """
 
 import lightkurve as lk
@@ -12,31 +11,30 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def clean_lightcurve(lc):
-    """Clean and normalize a raw Kepler light curve."""
-    # 1. Drop NaN cadences
+    """Clean telemetry, reject non-Gaussian outliers, and normalize baseline."""
+    # 1. Strip missing/unrecorded cadences
     clean = lc.remove_nans()
 
-    # 2. Kepler telemetry quality flag filtering
-    # quality == 0 isolates cadences unaffected by known spacecraft anomalies
+    # 2. Retain only optimal cadences (bitmask 0 = nominal spacecraft operations)
     clean = clean[clean.quality == 0]
 
-    # 3. Robust statistics using Median Absolute Deviation (MAD)
+    # 3. Compute robust noise scale via Median Absolute Deviation (outlier-immune)
     flux = clean.flux.value
     time = clean.time.value
 
     median_flux = np.nanmedian(flux)
-    # 1.4826 converts MAD to equivalent standard deviation for a normal distribution
+    # Scale factor 1.4826 aligns MAD with standard deviation for Gaussian noise
     mad = np.nanmedian(np.abs(flux - median_flux))
     sigma_mad = 1.4826 * mad
 
-    # Asymmetric clipping thresholds
-    upper_threshold = median_flux + 4.0 * sigma_mad   # Strict on cosmic ray spikes
-    lower_threshold = median_flux - 8.0 * sigma_mad   # Lenient on transit dips
+    # 4. Asymmetric thresholding: aggressively clip positive cosmic rays, preserve negative transit dips
+    upper_threshold = median_flux + 4.0 * sigma_mad   # Tight upper gate for cosmic-ray hits
+    lower_threshold = median_flux - 8.0 * sigma_mad   # Wide lower gate to protect transit depths
 
     mask = (flux <= upper_threshold) & (flux >= lower_threshold)
     clipped_lc = clean[mask]
 
-    # 4. Normalize median flux to 1.0
+    # 5. Rescale baseline to 1.0 for fractional transit depth analysis
     normalized_lc = clipped_lc.normalize()
 
     stats = {
@@ -50,6 +48,7 @@ def clean_lightcurve(lc):
     return normalized_lc, stats
 
 def main():
+    # 1. Fetch raw Quarter 3 target pixel telemetry
     print("[+] Fetching Kepler-10 Quarter 3 data...")
     lc = lk.search_lightcurve(
         "Kepler-10",
@@ -59,6 +58,7 @@ def main():
         exptime=1800
     ).download()
 
+    # 2. Execute cleaning pipeline and generate data accounting metrics
     print("[+] Cleaning and performing asymmetric sigma clipping...")
     clean_lc, stats = clean_lightcurve(lc)
 
@@ -69,22 +69,43 @@ def main():
     print(f"Final usable samples:  {stats['final_count']}")
     print(f"Photometric scatter:   {stats['sigma_mad'] / stats['median_flux'] * 1e6:.1f} ppm")
 
-    # Plot raw vs cleaned comparison
-    fig, axes = plt.subplots(2, 1, figsize=(11, 6), sharex=True, constrained_layout=True)
+    # 3. Comparative diagnostic plots: raw telemetry vs conditioned baseline
+    fig, axes = plt.subplots(
+        2, 1, figsize = (11, 6), 
+        sharex = True, 
+        constrained_layout = True
+    )
 
-    # Raw plot
-    axes[0].scatter(lc.time.value, lc.flux.value, s=1.5, color="gray", alpha=0.7, label="Raw PDCSAP Flux")
+    # Panel 1: Raw flux showing sensor systematics and cosmic-ray spikes
+    axes[0].scatter(
+        lc.time.value, lc.flux.value, s = 1.5, 
+        color = "gray", 
+        alpha = 0.7, 
+        label = "Raw PDCSAP Flux"
+    )
     axes[0].set_ylabel("Flux (e⁻ / s)")
     axes[0].set_title("Kepler-10 (Q3): Raw Telemetry")
-    axes[0].legend(loc="upper right")
+    axes[0].legend(loc = "upper right")
 
-    # Cleaned & Normalized plot
-    axes[1].scatter(clean_lc.time.value, clean_lc.flux.value, s=1.5, color="midnightblue", label="Cleaned & Normalized Flux")
-    axes[1].axhline(1.0, color="crimson", linestyle="--", linewidth=0.8, alpha=0.8, label="Baseline (1.0)")
+    # Panel 2: Normalized flux isolated around unity (1.0)
+    axes[1].scatter(
+        clean_lc.time.value, 
+        clean_lc.flux.value, 
+        s = 1.5, 
+        color = "midnightblue", 
+        label = "Cleaned & Normalized Flux"
+    )
+    axes[1].axhline(
+        1.0, color = "crimson", 
+        linestyle = "--", 
+        linewidth = 0.8, 
+        alpha = 0.8, 
+        label = "Baseline (1.0)"
+    )
     axes[1].set_ylabel("Normalized Flux")
     axes[1].set_xlabel("Time (BJD - 2454833)")
     axes[1].set_title("Cleaned, Masked & Normalized Time Series")
-    axes[1].legend(loc="upper right")
+    axes[1].legend(loc = "upper right")
 
     plt.show()
 

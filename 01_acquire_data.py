@@ -10,25 +10,26 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def main():
+    # 1. Query MAST archive for 30-min long-cadence observations
     print("[+] Querying NASA MAST archive for Kepler-10 (Quarter 3)...")
-    # Filter explicitly by exptime=1800 (Long Cadence, 30 min) to get the full quarter
     search_q3 = lk.search_lightcurve(
         "Kepler-10", 
-        mission="Kepler", 
-        quarter=3, 
-        author="Kepler",
-        exptime=1800
+        mission = "Kepler", 
+        quarter = 3, 
+        author = "Kepler",
+        exptime = 1800
     )
     print(search_q3)
 
+    # 2. Download calibrated FITS data product
     print("\n[+] Downloading single Long Cadence Q3 file...")
     lc = search_q3.download()
 
-    # Calculate sampling cadence using numpy difference on time values (in days)
+    # 3. Compute empirical sampling interval across cadences
     dt_days = np.nanmedian(np.diff(lc.time.value))
     dt_minutes = (dt_days * u.day).to(u.minute)
 
-    # Telemetry and metadata inspection
+    # 4. Display telemetry parameters and coordinate baseline
     print("\n--- LightCurve Telemetry Summary ---")
     print(f"Time format:       {lc.time.format} ({lc.time.scale})")
     print(f"Total data points: {len(lc)}")
@@ -36,14 +37,14 @@ def main():
     print(f"Baseline span:     {lc.time.value[-1] - lc.time.value[0]:.2f} days")
     print(f"Available columns: {lc.colnames}")
 
-    # Plot raw instrument-corrected flux (PDCSAP)
+    # 5. Plot spacecraft-corrected flux (PDCSAP removes pointing jitter & thermal drift)
     fig, ax = plt.subplots(figsize=(11, 4))
     lc.plot(
-        ax=ax,
-        column="pdcsap_flux",
-        label="PDCSAP Flux (Pre-search Data Conditioned)",
-        color="black",
-        lw=0.6
+        ax = ax,
+        column = "pdcsap_flux",
+        label = "PDCSAP Flux (Pre-search Data Conditioned)",
+        color = "black",
+        lw = 0.6
     )
     ax.set_title("Kepler-10 Quarter 3 Raw Photometric Time Series")
     ax.set_ylabel("Flux (e⁻ / s)")
